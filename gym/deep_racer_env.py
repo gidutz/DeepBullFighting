@@ -1,6 +1,8 @@
 import requests
 import json
 
+from gym.deep_racer_cam import DeepRacerCam
+
 
 class DeepRacerEnv():
     START = 'start'
@@ -53,3 +55,11 @@ class DeepRacerEnv():
     def reset(self):
         self.stop_riding()
         self.start_riding()
+
+        self.cam = DeepRacerCam()
+        self.cam.start()
+
+    def step(self, action):
+        self.move(*action)
+        observation = self.cam.get_image()
+        return observation, 0, False, {}
