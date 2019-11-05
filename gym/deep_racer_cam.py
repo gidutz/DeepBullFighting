@@ -6,10 +6,11 @@ from threading import Thread, Lock
 
 
 class DeepRacerCam(Thread):
-    def __init__(self, hostname, cookie):
+    def __init__(self, hostname, cookie, image_size=(224, 224)):
         super().__init__()
         self.daemon = True
 
+        self.image_size = image_size
         self.hostname = hostname
         self.cookie = cookie
 
@@ -38,7 +39,8 @@ class DeepRacerCam(Thread):
         return img
 
     def run(self):
-        cam_url = 'https://{}/route?topic=/video_mjpeg&width=224&height=224'.format(self.hostname)
+        cam_url = 'https://{}/route?topic=/video_mjpeg&width={}&height={}'.format(
+            self.hostname, self.image_size[0], self.image_size[1])
 
         headers = {
             'authority': self.hostname,

@@ -1,5 +1,8 @@
+import numpy as np
+import logging
+from tensorflow.keras.applications.vgg16 import VGG16, decode_predictions
+
 from deep_racer_env import DeepRacerEnv
-from tensorflow.keras.applications import VGG16
 
 if __name__ == '__main__':
     x_csrf_token = 'ImFhN2Q2NThjM2Q2Nzc4Y2UxYTg4ODNmMmY4NmMzNjI0MjEwOWFkYWMi.XcHBVw.CVXX1tdgal31VqlQIoqIEZe1nBE'
@@ -9,13 +12,16 @@ if __name__ == '__main__':
     vgg = VGG16()
     racer_env = DeepRacerEnv(x_csrf_token, cookie, host)
 
+    done = False
     obs = racer_env.reset()
-    while True:
-        object = vgg.predict(obs.reshape(1, 224, 224, 3))[0].argmax()
-        if object == 737:
-            speed = -.95
+
+    while not done:
+        _, obj_desc, score = decode_predictions(vgg.predict(np.stack([obs])), top=1)[0]
+        logging.info(obj_desc)
+
+        if obj_desc == 'pop_bottle':
+            speed = -(score * 0.9)
         else:
             speed = 0
-        obs, _, _, _ = racer_env.step([0.0, speed])
 
-    print(obs)
+        obs, _, done, _ = racer_env.step([0.0, speed])
