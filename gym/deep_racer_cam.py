@@ -6,9 +6,13 @@ from threading import Thread, Lock
 
 
 class DeepRacerCam(Thread):
-    def __init__(self):
+    def __init__(self, hostname, cookie):
         super().__init__()
         self.daemon = True
+
+        self.hostname = hostname
+        self.cookie = cookie
+
         self._data = None
         self._data_lock = Lock()
 
@@ -34,18 +38,18 @@ class DeepRacerCam(Thread):
         return img
 
     def run(self):
-        cam_url = 'https://172.20.1.54/route?topic=/video_mjpeg'
+        cam_url = 'https://{}/route?topic=/video_mjpeg'.format(self.hostname)
 
         headers = {
-            'authority': '172.20.1.54',
+            'authority': self.hostname,
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36',
             'accept': 'image/webp,image/apng,image/,/*;q=0.8',
             'sec-fetch-site': 'same-origin',
             'sec-fetch-mode': 'no-cors',
-            'referer': 'https://172.20.1.54/home',
+            'referer': 'https://{}/home'.format(self.hostname),
             'accept-encoding': 'gzip, deflate, br',
             'accept-language': 'en-US,en;q=0.9,he;q=0.8',
-            'cookie': 'session=eyJjc3JmX3Rva2VuIjp7IiBiIjoiWVdFM1pEWTFPR016WkRZM056aGpaVEZoT0RnNE0yWXlaamcyWXpNMk1qUXlNVEE1WVdSaFl3PT0ifX0.XcFkHQ.1q85c-OwPCH6JuldNwKC51U4yt8; deepracer_token=83b1e193-ff33-4bf8-9b79-172e3b82b087',
+            'cookie': self.cookie,
         }
 
         cam_req = Request(cam_url, headers=headers)
