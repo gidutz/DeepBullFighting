@@ -38,7 +38,7 @@ class DeepRacerCam(Thread):
         return img
 
     def run(self):
-        cam_url = 'https://{}/route?topic=/video_mjpeg'.format(self.hostname)
+        cam_url = 'https://{}/route?topic=/video_mjpeg&width=224&height=224'.format(self.hostname)
 
         headers = {
             'authority': self.hostname,
