@@ -1,6 +1,8 @@
 import requests
 import json
 
+from gym.deep_racer_cam import DeepRacerCam
+
 
 class DeepRacerEnv():
     START = 'start'
@@ -10,6 +12,7 @@ class DeepRacerEnv():
         self.x_csrf_token = x_csrf_token
         self.cookie = cookie
         self.hostname = host
+        self.cam = None
 
     def get_headers(self):
         headers = {
@@ -53,3 +56,14 @@ class DeepRacerEnv():
     def reset(self):
         self.stop_riding()
         self.start_riding()
+
+        if self.cam is not None:
+            self.cam.stop()
+
+        self.cam = DeepRacerCam(self.hostname, self.cookie)
+        self.cam.start()
+
+    def step(self, action):
+        self.move(*action)
+        observation = self.cam.get_image()
+        return observation, 0, False, {}
