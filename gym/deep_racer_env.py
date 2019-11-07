@@ -1,3 +1,4 @@
+import gym
 import requests
 import json
 import time
@@ -5,7 +6,8 @@ from deep_racer_cam import DeepRacerCam
 import logging
 from deep_racer_reward import DeepRacerReward
 
-class DeepRacerEnv:
+
+class DeepRacerEnv(gym.Env):
     START = 'start'
     STOP = 'stop'
 
