@@ -4,6 +4,8 @@ import time
 from deep_racer_cam import DeepRacerCam
 import logging
 
+
+
 class DeepRacerEnv():
     START = 'start'
     STOP = 'stop'
@@ -60,9 +62,20 @@ class DeepRacerEnv():
         logging.info("Started Game!")
         return self.cam.get_image()
 
+    def locate_object(self, object_name, observation):
+
+
+    def reward(self):
+        self.()
+
     def step(self, action):
+        """
+        Advances the car for 1 second
+        :param action: iterable of (angle (float), throttle(float))
+        :return: next observation, reward, over, info
+        """
         self.start_riding()
-        self.move(*action).text
+        self.move(*action)
         time.sleep(1)
         self.stop_riding()
         observation = self.cam.get_image()

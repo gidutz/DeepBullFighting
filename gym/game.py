@@ -5,8 +5,8 @@ from tensorflow.keras.applications.vgg16 import VGG16, decode_predictions
 from deep_racer_env import DeepRacerEnv
 
 if __name__ == '__main__':
-    x_csrf_token = 'ImFhN2Q2NThjM2Q2Nzc4Y2UxYTg4ODNmMmY4NmMzNjI0MjEwOWFkYWMi.XcHBVw.CVXX1tdgal31VqlQIoqIEZe1nBE'
-    cookie = 'session=eyJjc3JmX3Rva2VuIjp7IiBiIjoiWVdFM1pEWTFPR016WkRZM056aGpaVEZoT0RnNE0yWXlaamcyWXpNMk1qUXlNVEE1WVdSaFl3PT0ifX0.XcFkHQ.1q85c-OwPCH6JuldNwKC51U4yt8; deepracer_token=840ab528-4a07-445d-ae71-bcb4adac17a2'
+    x_csrf_token = 'IjYxMGNjOGYwMjc4YmY5ZjFkMjYwNWJiNzM1NmQ0ZjNiZmUxZmU4NmQi.XcLyIg.qGVU4kJNf98jBMaz16Y2Eg068Us'
+    cookie = 'session=eyJjc3JmX3Rva2VuIjp7IiBiIjoiTmpFd1kyTTRaakF5TnpoaVpqbG1NV1F5TmpBMVltSTNNelUyWkRSbU0ySm1aVEZtWlRnMlpBPT0ifX0.XcLFeg.BWhaGOuBkzyMpY1dvQoqI7jG4Ts; deepracer_token=5ba00dd2-48fd-4b85-817c-4b5e1a9e865e'
     host = '172.20.1.54'
 
     vgg = VGG16()
@@ -16,11 +16,11 @@ if __name__ == '__main__':
     obs = racer_env.reset()
 
     while not done:
-        _, obj_desc, score = decode_predictions(vgg.predict(np.stack([obs])), top=1)[0]
-        logging.info(obj_desc)
+        objects = [pred[1] for pred in decode_predictions(vgg.predict(np.stack([obs])), top=5)[0]]
+        logging.info(objects)
 
-        if obj_desc == 'pop_bottle':
-            speed = -(score * 0.9)
+        if 'pop_bottle' in objects:
+            speed = - 0.8
         else:
             speed = 0
 
