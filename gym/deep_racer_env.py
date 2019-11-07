@@ -3,17 +3,19 @@ import json
 import time
 from deep_racer_cam import DeepRacerCam
 import logging
-
+from deep_racer_reward import DeepRacerReward
 
 class DeepRacerEnv:
     START = 'start'
     STOP = 'stop'
 
-    def __init__(self, x_csrf_token, cookie, host):
+    def __init__(self, x_csrf_token, cookie, host, img_size=(224,224)):
         self.x_csrf_token = x_csrf_token
         self.cookie = cookie
         self.host = host
         self.cam = None
+        self.reward_calculator = DeepRacerReward(img_size=img_size,
+                                                 object_name='bottle')
 
     def get_headers(self):
         headers = {
@@ -61,11 +63,6 @@ class DeepRacerEnv:
         logging.info("Started Game!")
         return self.cam.get_image()
 
-    def locate_object(self, object_name, observation):
-
-
-    def reward(self):
-        self.()
 
     def step(self, action):
         """
@@ -78,5 +75,9 @@ class DeepRacerEnv:
         time.sleep(1)
         self.stop_riding()
         observation = self.cam.get_image()
+        reward = self.reward_calculator.get_reward(observation)
 
-        return observation, 0, False, {}
+        info = {'distance_from_center': self.reward_calculator.get_distance_from_img_center(),
+                'box': self.reward_calculator.get_distance_from_img_center()}
+
+        return observation, reward, False, info

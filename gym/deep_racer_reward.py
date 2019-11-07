@@ -1,8 +1,9 @@
+from object_detection.detection import Detection
 from object_detection.yolo import YOLO
 from scipy.spatial.distance import euclidean
 
 
-class DeepRacerImageProcessing:
+class DeepRacerReward:
 
     def __init__(self, img_size=(224,224), object_name=None):
         self.img_size = img_size
@@ -26,7 +27,7 @@ class DeepRacerImageProcessing:
         :return:
         """
         max_area = 0
-        max_detection = None
+        max_detection = Detection([0,0,0,0], 0, 0)
 
         for detection in detections:
             if object_name is not None and detection['object_name'] != object_name:
