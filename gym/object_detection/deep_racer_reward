@@ -4,7 +4,7 @@ import numpy as np
 from scipy.spatial.distance import euclidean
 
 
-class DeepRacerImageProcessing():
+class DeepRacerImageProcessing:
 
     def __init__(self, img_size=(224,224)):
         self.img_size = img_size
