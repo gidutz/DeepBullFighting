@@ -1,4 +1,6 @@
+import numpy as np
 import gym
+from gym import spaces
 import requests
 import json
 import time
@@ -11,13 +13,17 @@ class DeepRacerEnv(gym.Env):
     START = 'start'
     STOP = 'stop'
 
-    def __init__(self, x_csrf_token, cookie, host, img_size=(224,224)):
+    def __init__(self, x_csrf_token, cookie, host, img_size=(224, 224)):
         self.x_csrf_token = x_csrf_token
         self.cookie = cookie
         self.host = host
+        self.img_size = img_size
         self.cam = None
-        self.reward_calculator = DeepRacerReward(img_size=img_size,
+        self.reward_calculator = DeepRacerReward(img_size=self.img_size,
                                                  object_name='bottle')
+
+        self.action_space = spaces.Box(np.array([-30.0,-1.0]), np.array([+30.0,+1.0]), dtype=np.float32) # angle, throttle
+        self.observation_space = spaces.Box(low=0, high=255, shape=self.img_size + (3,), dtype=np.uint8)
 
     def get_headers(self):
         headers = {
@@ -59,7 +65,7 @@ class DeepRacerEnv(gym.Env):
         return self.start_stop(DeepRacerEnv.STOP)
 
     def reset(self):
-        self.cam = DeepRacerCam(self.host, self.cookie)
+        self.cam = DeepRacerCam(self.host, self.cookie, self.img_size)
         self.cam.start()
         time.sleep(1)
         logging.info("Started Game!")

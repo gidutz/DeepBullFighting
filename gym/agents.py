@@ -1,14 +1,36 @@
+from itertools import product
+
 import numpy as np
 from random import sample
+from gym import spaces
+from gym import ActionWrapper
 import keras.layers as lyr
 from keras.models import Model
 
 from deep_racer_env import DeepRacerEnv
 
 
+class ContinuesToDiscreteActionWrapper(ActionWrapper):
+    """
+    Converts continues action into discrete
+    """
+
+    def __init__(self, env, action_nvec):
+        super().__init__(env)
+        self.actions = list(product(*[np.linspace(env.action_space.low[i], env.action_space.high[i], n)
+                                      for i, n in enumerate(action_nvec)]))
+        self.action_space = spaces.Discrete(len(self.actions))
+
+    def action(self, action):
+        return self.actions[action]
+
+    def reverse_action(self, action):
+        return self.actions.index(action)
+
+
 class DQNAgent:
-    def __init__(self, env: DeepRacerEnv, gamma, exploraion_rate):
-        self.env = env
+    def __init__(self, env: DeepRacerEnv, gamma, exploraion_rate, action_nvec=(5, 3)):
+        self.env = ContinuesToDiscreteActionWrapper(env, nvec=action_nvec)
         self.gamma = gamma
         self.exploraion_rate = exploraion_rate
         self.memory = []
@@ -35,7 +57,7 @@ class DQNAgent:
         if np.random.rand() < self.exploraion_rate:
             return self.env.action_space.sample()
 
-        return self.env.action_space[self.model.predict(np.stack([observation]))[0].argmax()]
+        return self.model.predict(np.stack([observation]))[0].argmax()
 
     def td_step(self, batch_size=32):
         batch = sample(self.memory, min(self.td_batch_size, len(self.memory)))

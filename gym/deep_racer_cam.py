@@ -6,7 +6,7 @@ from threading import Thread, Lock
 
 
 class DeepRacerCam(Thread):
-    def __init__(self, hostname, cookie, image_size=(224, 224)):
+    def __init__(self, hostname, cookie, image_size):
         super().__init__()
         self.daemon = True
 
