@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Class definition of YOLO_v3 style detection model on image and video
+source: https://github.com/qqwweee/keras-yolo3
 """
 
 import colorsys
@@ -8,11 +9,12 @@ import numpy as np
 from keras import backend as K
 from keras.models import load_model
 from keras.layers import Input
-
-from yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
-from yolo3.utils import letterbox_image
+from object_detection.yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
+from object_detection.yolo3.utils import letterbox_image
 import os
 from keras.utils import multi_gpu_model
+from object_detection.detection import Detection
+
 
 class YOLO(object):
     _defaults = {
@@ -118,28 +120,22 @@ class YOLO(object):
                 self.input_image_shape: [image.size[1], image.size[0]],
                 K.learning_phase(): 0
             })
-         
+
+        detections = []
         for i, c in reversed(list(enumerate(out_classes))):
             predicted_class = self.class_names[c]
             box = out_boxes[i]
             score = out_scores[i]
             
-            label = '{} {:.2f}'.format(predicted_class, score)
             top, left, bottom, right = box
-            #top = max(0, np.floor(top + 0.5).astype('int32'))
-            #left = max(0, np.floor(left + 0.5).astype('int32'))
-            #bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
-            #right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
             position = {'top': top,
                         'left': left,
-                        'bottom':bottom,
-                        'right': right
-                       }
-            
-            
-            print(label, str(position))
+                        'bottom': bottom,
+                        'right': right}
+            print(predicted_class, str(position))
+            detections.append(Detection(box, predicted_class, score))
 
-        return image
+        return detections
 
     def close_session(self):
         self.sess.close()

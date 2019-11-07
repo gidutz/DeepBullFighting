@@ -5,8 +5,7 @@ from deep_racer_cam import DeepRacerCam
 import logging
 
 
-
-class DeepRacerEnv():
+class DeepRacerEnv:
     START = 'start'
     STOP = 'stop'
 

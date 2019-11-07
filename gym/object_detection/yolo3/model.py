@@ -1,4 +1,7 @@
-"""YOLO_v3 Model Defined in Keras."""
+"""YOLO_v3 Model Defined in Keras.
+source: https://github.com/qqwweee/keras-yolo3
+
+"""
 
 from functools import wraps
 
@@ -9,7 +12,7 @@ from tensorflow.keras.layers import Conv2D, Add, ZeroPadding2D, UpSampling2D, Co
 from tensorflow.keras.models import Model
 from tensorflow.keras.regularizers import l2
 
-from yolo3.utils import compose
+from object_detection.yolo3.utils import compose
 
 
 @wraps(Conv2D)
