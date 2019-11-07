@@ -6,6 +6,7 @@ from keras.models import Model
 from deep_racer_env import DeepRacerEnv
 
 
+
 class DQNAgent:
     def __init__(self, env: DeepRacerEnv, gamma, exploraion_rate):
         self.env = env
