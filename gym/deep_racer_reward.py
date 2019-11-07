@@ -1,4 +1,4 @@
-from object_detection.detection import Detection
+from object_detection.detectionresult import DetectionResult
 from object_detection.yolo import YOLO
 from scipy.spatial.distance import euclidean
 
@@ -27,7 +27,7 @@ class DeepRacerReward:
         :return:
         """
         max_area = 0
-        max_detection = Detection([0,0,0,0], 0, 0)
+        max_detection = DetectionResult([0, 0, 0, 0], 0, 0)
 
         for detection in detections:
             if object_name is not None and detection['object_name'] != object_name:

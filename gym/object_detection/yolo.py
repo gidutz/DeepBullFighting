@@ -13,7 +13,7 @@ from object_detection.yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
 from object_detection.yolo3.utils import letterbox_image
 import os
 from keras.utils import multi_gpu_model
-from object_detection.detection import Detection
+from object_detection.detectionresult import DetectionResult
 
 
 class YOLO(object):
@@ -133,7 +133,7 @@ class YOLO(object):
                         'bottom': bottom,
                         'right': right}
             print(predicted_class, str(position))
-            detections.append(Detection(box, predicted_class, score))
+            detections.append(DetectionResult(box, predicted_class, score))
 
         return detections
 

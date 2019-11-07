@@ -1,6 +1,7 @@
 import numpy as np
 
-class Detection:
+
+class DetectionResult:
 
     def __init__(self, box, object_class, score):
         self.box = box
