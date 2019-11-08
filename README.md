@@ -14,3 +14,9 @@ python convert.py yolov3.cfg yolov3.weights model_data/yolo.h5
 Visit qqwweee/keras-yolo3 for mor instructions.
 ### Obtaining cookie and x-csrf-token
 As for now, we do not automatically retrieve the cookie and x-csrf-token. In order to do that, follow the instructions [here](https://www.youtube.com/watch?v=9eTNSt_zHeA "here") to connect your DeepRacer to the wifi.  After the car is connected, surf to its console, [capture the network traffic](https://developers.google.com/web/tools/chrome-devtools/network "capture the network traffic")  and extract the fields from one of the headers' request.
+
+## Demo
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=L2MsII6-kd8"><img src="https://img.youtube.com/vi/L2MsII6-kd8/0.jpg" alt="IMAGE ALT TEXT"></a>
+</div>
+
