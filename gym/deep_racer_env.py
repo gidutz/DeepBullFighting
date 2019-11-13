@@ -7,23 +7,25 @@ import time
 from deep_racer_cam import DeepRacerCam
 import logging
 from deep_racer_object_detection import DeepRacerObjectDetection
+from object_detection.detectionresult import DetectionResult
 
 
 class DeepRacerEnv(gym.Env):
     START = 'start'
     STOP = 'stop'
 
-    def __init__(self, x_csrf_token, cookie, host, img_size=(224, 224)):
+    def __init__(self, x_csrf_token, cookie, host, image_size=(224, 224)):
         self.x_csrf_token = x_csrf_token
         self.cookie = cookie
         self.host = host
-        self.img_size = img_size
+        self.image_size = np.array(image_size)
         self.cam = None
-        self.reward_calculator = DeepRacerObjectDetection(img_size=self.img_size,
-                                                          object_name='bottle')
+        self.object_detector = DeepRacerObjectDetection(img_size=self.image_size,
+                                                        object_name='bottle')
 
         self.action_space = spaces.Box(np.array([-0.9,-1.0]), np.array([+0.9,+1.0]), dtype=np.float32) # angle, throttle
-        self.observation_space = spaces.Box(low=0, high=255, shape=self.img_size + (3,), dtype=np.uint8)
+        self.observation_space = spaces.Box(low=0, high=255, shape=self.image_size + (3,), dtype=np.uint8)
+        self.latest_detection = DetectionResult.get_empty()
 
     def get_headers(self):
         headers = {
@@ -65,7 +67,7 @@ class DeepRacerEnv(gym.Env):
         return self.start_stop(DeepRacerEnv.STOP)
 
     def reset(self):
-        self.cam = DeepRacerCam(self.host, self.cookie, self.img_size)
+        self.cam = DeepRacerCam(self.host, self.cookie, self.image_size)
         self.cam.start()
         logging.info("Started Game!")
         return self.cam.get_image()
@@ -88,9 +90,11 @@ class DeepRacerEnv(gym.Env):
         time.sleep(step_duration)
         self.stop_riding()
         observation = self.cam.get_image()
-        reward = self.reward_calculator.get_reward(observation)
+        self.latest_detection = self.object_detector.get_detection(observation)
 
-        info = {'distance_from_center': self.reward_calculator.get_distance_from_img_center(),
-                'box': self.reward_calculator.get_distance_from_img_center()}
+        reward = self.object_detector.get_reward(observation)
+
+        info = {'distance_from_center': self.object_detector.get_distance_from_img_center(),
+                'box': self.object_detector.get_distance_from_img_center()}
 
         return observation, reward, False, info

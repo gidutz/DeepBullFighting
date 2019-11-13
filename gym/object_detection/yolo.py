@@ -44,8 +44,8 @@ class YOLO(object):
         self.boxes, self.scores, self.classes = self.generate()
 
     def _update_base_dir(self):
-        v = self.__dict__.get("base_dir")
-        if v and v.strip():
+        val = self.__dict__.get("base_dir")
+        if val and val.strip():
             base_dir = self.__dict__['base_dir']
             model_path = self.__dict__['model_path']
             anchors_path = self.__dict__['anchors_path']
@@ -138,13 +138,6 @@ class YOLO(object):
             predicted_class = self.class_names[c]
             box = out_boxes[i]
             score = out_scores[i]
-            
-            top, left, bottom, right = box
-            position = {'top': top,
-                        'left': left,
-                        'bottom': bottom,
-                        'right': right}
-            print(predicted_class, str(position))
             detections.append(DetectionResult(box, predicted_class, score))
 
         return detections

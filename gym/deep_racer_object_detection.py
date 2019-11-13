@@ -16,7 +16,6 @@ class DeepRacerObjectDetection:
         self.model = YOLO(model_image_size=self.img_size, base_dir=model_data_dir)
 
     def detect_object(self, img):
-
         return self.model.detect_image(img)
 
     def get_distance_from_img_center(self, detection):
@@ -24,7 +23,7 @@ class DeepRacerObjectDetection:
 
         return euclidean(self.img_size/2, center)
 
-    def find_max_object(self, detections, object_name=None):
+    def _find_max_object(self, detections):
         """
         In a iterable of detected objects finds the one with the largest bounding box
         :param object_name: the name of the object to find
@@ -35,20 +34,20 @@ class DeepRacerObjectDetection:
                 max_area: Area of the max detection
         """
         max_area = 0
-        max_detection = DetectionResult([0, 0, 0, 0], 0, 0)
+        max_detection = DetectionResult.get_empty()
 
         for detection in detections:
-            if object_name is not None and detection['object_name'] != object_name:
+            if self.object_name is not None and detection.get_object_class() != self.object_name:
                 continue
             current_area = detection.get_bonding_area()
             if current_area > max_area:
                 max_area = current_area
                 max_detection = detection
 
-        return max_detection, max_area
+        return max_detection
 
-    def get_detections(self, observation):
-        return self.model.detect_image(observation)
+    def get_detection(self, observation):
+        return self._find_max_object(self.model.detect_image(observation))
 
     def destroy(self):
         self.model.close_session()

@@ -2,6 +2,7 @@ import unittest
 from deep_racer_object_detection import DeepRacerObjectDetection
 from object_detection.yolo import YOLO
 from os import path
+from os.path import expanduser
 import yaml
 
 with open("../tests/conf.yaml", 'r') as stream:
@@ -18,7 +19,7 @@ class TestObjectDetection(unittest.TestCase):
         object_name = 'bottle'
 
         # Act
-        detector = DeepRacerObjectDetection(object_name=object_name, model_data_dir=conf['yolo_base_path'])
+        detector = DeepRacerObjectDetection(object_name=object_name, model_data_dir=expanduser(conf['yolo_base_path']))
 
         # Assert
         self.assertIsInstance(detector.model, YOLO)
@@ -26,15 +27,15 @@ class TestObjectDetection(unittest.TestCase):
     def test_detect_object(self):
         # Arrange
         from PIL import Image
-        detector = DeepRacerObjectDetection(object_name='bottle', model_data_dir=conf['yolo_base_path'])
-        sample_path = path.join(conf['samples_dir'], 'bottles.jpg')
+        detector = DeepRacerObjectDetection(object_name='bottle', model_data_dir=expanduser(conf['yolo_base_path']))
+        sample_path = expanduser(path.join(conf['samples_dir'], 'bottles.jpg'))
         observation = Image.open(sample_path)
 
         # Act
-        detections = detector.get_detections(observation)
+        detection = detector.get_detection(observation)
 
         # Assert
-        self.assertGreaterEqual(len(detections), 1)
+        self.assertEqual(detection.get_object_class(), 'bottle')
 
 
 if __name__ == '__main__':

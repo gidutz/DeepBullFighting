@@ -4,7 +4,7 @@ import numpy as np
 class DetectionResult:
 
     def __init__(self, box, object_class, score):
-        self.box = box
+        self.box = np.array(box).astype(np.float)
         self.object_class = object_class
         self.score = score
         top, left, bottom, right = self.box
@@ -12,6 +12,12 @@ class DetectionResult:
         self.left = left
         self.bottom = bottom
         self.right = right
+
+    def get_object_class(self):
+        return self.object_class
+
+    def get_box(self):
+        return self.box
 
     def get_bonding_area(self):
         h = np.abs(self.top - self.bottom)
@@ -23,5 +29,10 @@ class DetectionResult:
         x = (self.left + self.right) / 2.0
         y = (self.top + self.bottom) / 2.0
 
-        return (x, y)
+        return np.array([x, y])
+
+    @classmethod
+    def get_empty(cls):
+        return cls([0, 0, 0, 0], 0, 0)
+
 
