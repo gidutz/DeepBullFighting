@@ -1,27 +1,27 @@
-import numpy as np
-import logging
-from tensorflow.keras.applications.vgg16 import VGG16, decode_predictions
 
 from deep_racer_env import DeepRacerEnv
+from gym_wrappers import ObservationToDetectionWrapper, DeepRewardWrapper, ContinuesToDiscreteActionWrapper
+from agents import DQNAgent
+from os.path import expanduser
 
 if __name__ == '__main__':
-    x_csrf_token = 'IjYxMGNjOGYwMjc4YmY5ZjFkMjYwNWJiNzM1NmQ0ZjNiZmUxZmU4NmQi.XcLyIg.qGVU4kJNf98jBMaz16Y2Eg068Us'
-    cookie = 'session=eyJjc3JmX3Rva2VuIjp7IiBiIjoiTmpFd1kyTTRaakF5TnpoaVpqbG1NV1F5TmpBMVltSTNNelUyWkRSbU0ySm1aVEZtWlRnMlpBPT0ifX0.XcLFeg.BWhaGOuBkzyMpY1dvQoqI7jG4Ts; deepracer_token=5ba00dd2-48fd-4b85-817c-4b5e1a9e865e'
+    x_csrf_token = 'IjNlZTM2OWRkY2RhZDVmMTkyMzQxZmU3MzQzNGVkMDc4MWEzMDFhNDUi.Xcw5Lg.UJ1ELWy1XMFETdAPMYYiIQu60u4'
+    cookie = 'session=eyJjc3JmX3Rva2VuIjp7IiBiIjoiTTJWbE16WTVaR1JqWkdGa05XWXhPVEl6TkRGbVpUY3pORE0wWldRd056Z3hZVE13TVdFME5RPT0ifX0.XcwpnQ.7vyPjIn6PF4XbjmPJc5cJ5ZMct4; deepracer_token=7c16afa0-793e-4d90-a843-bfc45dfa6425'
     host = '172.20.1.54'
+    model_data_dir = expanduser('~/PycharmProjects/DeepBullFighter/gym/object_detection')
+    racer_env = DeepRacerEnv(x_csrf_token=x_csrf_token, cookie=cookie, host=host, model_data_dir=model_data_dir)
+    racer_env = ObservationToDetectionWrapper(racer_env)
+    racer_env = DeepRewardWrapper(racer_env)
+    racer_env = ContinuesToDiscreteActionWrapper(racer_env, action_nvec=(3,3))
 
-    vgg = VGG16()
-    racer_env = DeepRacerEnv(x_csrf_token, cookie, host)
+    agent = DQNAgent(racer_env, gamma=0.9, exploraion_rate=0.1)
 
     done = False
     obs = racer_env.reset()
 
     while not done:
-        objects = [pred[1] for pred in decode_predictions(vgg.predict(np.stack([obs])), top=5)[0]]
-        logging.info(objects)
-
-        if 'pop_bottle' in objects:
-            speed = - 0.8
-        else:
-            speed = 0
-
-        obs, _, done, _ = racer_env.step([0.0, speed])
+        action = agent.act(obs)
+        print(obs, action, racer_env.action(action))
+        obs_next, reward, done, _ = racer_env.step(action)
+        agent.feedback(obs, action, reward, obs_next)
+        obs = obs_next

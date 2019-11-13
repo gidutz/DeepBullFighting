@@ -10,8 +10,8 @@ from gym_wrappers import ContinuesToDiscreteActionWrapper
 
 
 class DQNAgent:
-    def __init__(self, env: DeepRacerEnv, gamma, exploraion_rate, action_nvec=(5, 3)):
-        self.env = ContinuesToDiscreteActionWrapper(env, nvec=action_nvec)
+    def __init__(self, env: DeepRacerEnv, gamma, exploraion_rate):
+        self.env = env
         self.gamma = gamma
         self.exploraion_rate = exploraion_rate
         self.memory = []
@@ -41,7 +41,7 @@ class DQNAgent:
         return self.model.predict(np.stack([observation]))[0].argmax()
 
     def td_step(self, batch_size=32):
-        batch = sample(self.memory, min(self.td_batch_size, len(self.memory)))
+        batch = sample(self.memory, min(batch_size, len(self.memory)))
         X = np.stack([observation for observation, _, _, _ in batch])
         a = np.stack([action for _, action, _, _ in batch])
         r = np.stack([reward for _, _, reward, _ in batch])
@@ -49,7 +49,7 @@ class DQNAgent:
 
         R = self.model.predict(X)
         R_next = self.model.predict(X_next)
-        R[range(len(R)),a] = r + self.gamma * R_next.max(axis=0)
+        R[range(len(R)),a] = r + self.gamma * R_next.max(axis=1)
         self.model.train_on_batch(X, R)
 
     def feedback(self, observation, action, reward, next_observation):

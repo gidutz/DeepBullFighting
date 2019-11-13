@@ -14,7 +14,7 @@ from object_detection.yolo3.utils import letterbox_image
 import os
 from keras.utils import multi_gpu_model
 from object_detection.detectionresult import DetectionResult
-
+from PIL import Image
 
 class YOLO(object):
     _defaults = {
@@ -110,7 +110,8 @@ class YOLO(object):
         return boxes, scores, classes
 
     def detect_image(self, image):
-
+        if isinstance(image, np.ndarray):
+            image = Image.fromarray(image)
         if self.model_image_size != (None, None):
             assert self.model_image_size[0]%32 == 0, 'Multiples of 32 required'
             assert self.model_image_size[1]%32 == 0, 'Multiples of 32 required'
@@ -136,7 +137,15 @@ class YOLO(object):
         detections = []
         for i, c in reversed(list(enumerate(out_classes))):
             predicted_class = self.class_names[c]
+
             box = out_boxes[i]
+            top, left, bottom, right = box
+            top = max(0, np.floor(top + 0.5).astype('int32'))
+            left = max(0, np.floor(left + 0.5).astype('int32'))
+            bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
+            right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
+            box = (top, left, bottom, right)
+
             score = out_scores[i]
             detections.append(DetectionResult(box, predicted_class, score))
 

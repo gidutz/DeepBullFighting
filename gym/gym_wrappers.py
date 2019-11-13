@@ -30,7 +30,7 @@ class ObservationToDetectionWrapper(ObservationWrapper):
         self.observation_space = spaces.Box(low=0, high=1, shape=(4,), dtype=np.float32)
 
     def observation(self, observation):
-        top, left, bottom, right = self.env.latest_decetion.get_box()
+        top, left, bottom, right = self.env.latest_detection.get_box()
         return np.array([
             top / self.env.image_size[1],
             left / self.env.image_size[0],
@@ -49,8 +49,8 @@ class DeepRewardWrapper(RewardWrapper):
          :param detectios: max detection of the observation
          :return: The reward
          """
-        coverage = self.env.latest_decetion.get_bounding_area() / (self.env.image_size[0] * self.env.image_size[1])
-        distance_from_center = ((self.env.latest_decetion.get_bounding_center() - self.env.image_size)**2).sum()**0.5
+        coverage = self.env.latest_detection.get_area() / (self.env.image_size[0] * self.env.image_size[1])
+        distance_from_center = ((self.env.latest_detection.get_center() - self.env.image_size) ** 2).sum() ** 0.5
         distance_from_center /= ((self.env.image_size / 2)**2).sum()**0.5
 
         return (1.0 - distance_from_center) * coverage
