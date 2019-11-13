@@ -5,7 +5,7 @@ from scipy.spatial.distance import euclidean
 
 class DeepRacerObjectDetection:
 
-    def __init__(self, img_size=(224,224), object_name=None):
+    def __init__(self, img_size=(224,224), object_name=None, model_data_dir=None):
         """
 
         :param img_size: tuple, (width, height) of the image input
@@ -13,7 +13,7 @@ class DeepRacerObjectDetection:
         """
         self.img_size = img_size
         self.object_name = object_name
-        self.model = YOLO(model_image_size=self.img_size)
+        self.model = YOLO(model_image_size=self.img_size, base_dir=model_data_dir)
 
     def detect_object(self, img):
 

@@ -21,9 +21,9 @@ class YOLO(object):
         "model_path": 'model_data/yolo.h5',
         "anchors_path": 'model_data/yolo_anchors.txt',
         "classes_path": 'model_data/coco_classes.txt',
-        "score" : 0.3,
-        "iou" : 0.45,
-        "model_image_size" : (416, 416),
+        "score": 0.3,
+        "iou": 0.45,
+        "model_image_size": (416, 416),
         "gpu_num" : 1,
     }
 
@@ -37,10 +37,22 @@ class YOLO(object):
     def __init__(self, **kwargs):
         self.__dict__.update(self._defaults) # set up default values
         self.__dict__.update(kwargs) # and update with user overrides
+        self._update_base_dir()
         self.class_names = self._get_class()
         self.anchors = self._get_anchors()
         self.sess = K.get_session()
         self.boxes, self.scores, self.classes = self.generate()
+
+    def _update_base_dir(self):
+        v = self.__dict__.get("base_dir")
+        if v and v.strip():
+            base_dir = self.__dict__['base_dir']
+            model_path = self.__dict__['model_path']
+            anchors_path = self.__dict__['anchors_path']
+            classes_path = self.__dict__['classes_path']
+            self.__dict__.update(model_path=os.path.join(base_dir, model_path))
+            self.__dict__.update(anchors_path=os.path.join(base_dir, anchors_path))
+            self.__dict__.update(classes_path=os.path.join(base_dir, classes_path))
 
     def _get_class(self):
         classes_path = os.path.expanduser(self.classes_path)
