@@ -25,3 +25,8 @@ class DetectionResult:
 
         return (x, y)
 
+    @classmethod
+    def get_empty(cls):
+        return cls([0, 0, 0, 0], 0, 0)
+
+

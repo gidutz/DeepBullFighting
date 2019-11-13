@@ -24,6 +24,7 @@ class ContinuesToDiscreteActionWrapper(ActionWrapper):
 class ObservationToDetectionWrapper(ObservationWrapper):
 
     def observation(self, observation):
+
         pass
 
 
