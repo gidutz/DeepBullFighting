@@ -23,7 +23,7 @@ class DeepRacerObjectDetection:
 
         return euclidean(self.img_size/2, center)
 
-    def _find_max_object(self, detections, object_name=None):
+    def _find_max_object(self, detections):
         """
         In a iterable of detected objects finds the one with the largest bounding box
         :param object_name: the name of the object to find
@@ -37,7 +37,7 @@ class DeepRacerObjectDetection:
         max_detection = DetectionResult.get_empty()
 
         for detection in detections:
-            if object_name is not None and detection['object_name'] != object_name:
+            if self.object_name is not None and detection.get_object_class() != self.object_name:
                 continue
             current_area = detection.get_bonding_area()
             if current_area > max_area:
