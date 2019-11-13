@@ -3,18 +3,25 @@ from object_detection.yolo import YOLO
 from scipy.spatial.distance import euclidean
 
 
-class DeepRacerReward:
+class DeepRacerObjectDetection:
 
-    def __init__(self, img_size=(224,224), object_name=None):
+    def __init__(self, img_size=(224,224), object_name=None, model_data_dir=None):
+        """
+
+        :param img_size: tuple, (width, height) of the image input
+        :param object_name: name of the object to search
+        """
         self.img_size = img_size
         self.object_name = object_name
-        self.model = YOLO(model_image_size=self.img_size)
+        self.model = YOLO(model_image_size=self.img_size, base_dir=model_data_dir)
 
     def detect_object(self, img):
+
         return self.model.detect_image(img)
 
     def get_distance_from_img_center(self, detection):
         center = detection.get_bounding_center()
+
         return euclidean(self.img_size/2, center)
 
     def find_max_object(self, detections, object_name=None):
@@ -24,7 +31,8 @@ class DeepRacerReward:
                  if None, returns any object
                  else returns on of the coco list
         :param detections: list of
-        :return:
+        :return: max_detection: Detection with largest area
+                max_area: Area of the max detection
         """
         max_area = 0
         max_detection = DetectionResult([0, 0, 0, 0], 0, 0)
@@ -38,20 +46,6 @@ class DeepRacerReward:
                 max_detection = detection
 
         return max_detection, max_area
-
-    def get_reward(self, observation):
-        """
-        Calculates the reward, defined as:
-            %coverage of the top bounding box * distance between bounding box center and image center
-        :param observation: Image of the observation
-        :return: The reward
-        """
-        detections = self.get_detections(observation)
-        max_detection, max_area = self.find_max_object(detections, self.object_name)
-        coverage = max_area / (self.img_size[0]*self.img_size[1])
-        distance_from_center = self.get_distance_from_img_center(detections)
-
-        return distance_from_center*coverage
 
     def get_detections(self, observation):
         return self.model.detect_image(observation)

@@ -1,0 +1,2 @@
+samples_dir: ~/PycharmProjects/DeepBullFighter/tests/test_data
+yolo_base_path:   ~/PycharmProjects/DeepBullFighter/gym/object_detection

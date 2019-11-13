@@ -1,31 +1,12 @@
-from itertools import product
 
 import numpy as np
 from random import sample
-from gym import spaces
-from gym import ActionWrapper
+
 import keras.layers as lyr
 from keras.models import Model
 
 from deep_racer_env import DeepRacerEnv
-
-
-class ContinuesToDiscreteActionWrapper(ActionWrapper):
-    """
-    Converts continues action into discrete
-    """
-
-    def __init__(self, env, action_nvec):
-        super().__init__(env)
-        self.actions = list(product(*[np.linspace(env.action_space.low[i], env.action_space.high[i], n)
-                                      for i, n in enumerate(action_nvec)]))
-        self.action_space = spaces.Discrete(len(self.actions))
-
-    def action(self, action):
-        return self.actions[action]
-
-    def reverse_action(self, action):
-        return self.actions.index(action)
+from gym_wrappers import ContinuesToDiscreteActionWrapper
 
 
 class DQNAgent:

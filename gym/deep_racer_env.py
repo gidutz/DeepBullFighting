@@ -6,7 +6,7 @@ import json
 import time
 from deep_racer_cam import DeepRacerCam
 import logging
-from deep_racer_reward import DeepRacerReward
+from deep_racer_object_detection import DeepRacerObjectDetection
 
 
 class DeepRacerEnv(gym.Env):
@@ -19,10 +19,10 @@ class DeepRacerEnv(gym.Env):
         self.host = host
         self.img_size = img_size
         self.cam = None
-        self.reward_calculator = DeepRacerReward(img_size=self.img_size,
-                                                 object_name='bottle')
+        self.reward_calculator = DeepRacerObjectDetection(img_size=self.img_size,
+                                                          object_name='bottle')
 
-        self.action_space = spaces.Box(np.array([-30.0,-1.0]), np.array([+30.0,+1.0]), dtype=np.float32) # angle, throttle
+        self.action_space = spaces.Box(np.array([-0.9,-1.0]), np.array([+0.9,+1.0]), dtype=np.float32) # angle, throttle
         self.observation_space = spaces.Box(low=0, high=255, shape=self.img_size + (3,), dtype=np.uint8)
 
     def get_headers(self):
@@ -67,20 +67,25 @@ class DeepRacerEnv(gym.Env):
     def reset(self):
         self.cam = DeepRacerCam(self.host, self.cookie, self.img_size)
         self.cam.start()
-        time.sleep(1)
         logging.info("Started Game!")
         return self.cam.get_image()
 
-
-    def step(self, action):
+    def is_game_over(self, detections):
         """
-        Advances the car for 1 second
+
+        :return:
+        """
+
+    def step(self, action, step_duration=1):
+        """
+        Advances the car for step_duration second
         :param action: iterable of (angle (float), throttle(float))
+        :param step_duration (float or int): number of seconds to ride
         :return: next observation, reward, over, info
         """
         self.start_riding()
         self.move(*action)
-        time.sleep(1)
+        time.sleep(step_duration)
         self.stop_riding()
         observation = self.cam.get_image()
         reward = self.reward_calculator.get_reward(observation)
