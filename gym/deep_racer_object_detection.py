@@ -39,7 +39,7 @@ class DeepRacerObjectDetection:
         for detection in detections:
             if self.object_name is not None and detection.get_object_class() != self.object_name:
                 continue
-            current_area = detection.get_bonding_area()
+            current_area = detection.get_area()
             if current_area > max_area:
                 max_area = current_area
                 max_detection = detection
