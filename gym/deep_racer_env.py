@@ -14,14 +14,15 @@ class DeepRacerEnv(gym.Env):
     START = 'start'
     STOP = 'stop'
 
-    def __init__(self, x_csrf_token, cookie, host, image_size=(224, 224)):
+    def __init__(self, x_csrf_token, cookie, host, image_size=(224, 224), model_data_dir=None):
         self.x_csrf_token = x_csrf_token
         self.cookie = cookie
         self.host = host
         self.image_size = np.array(image_size)
         self.cam = None
-        self.object_detector = DeepRacerObjectDetection(img_size=self.image_size,
-                                                        object_name='bottle')
+        self.object_detector = DeepRacerObjectDetection(image_size=self.image_size,
+                                                        object_name='bottle',
+                                                        model_data_dir=model_data_dir)
 
         self.action_space = spaces.Box(np.array([-0.9,-1.0]), np.array([+0.9,+1.0]), dtype=np.float32) # angle, throttle
         self.observation_space = spaces.Box(low=0, high=255, shape=self.image_size + (3,), dtype=np.uint8)
@@ -92,9 +93,4 @@ class DeepRacerEnv(gym.Env):
         observation = self.cam.get_image()
         self.latest_detection = self.object_detector.get_detection(observation)
 
-        reward = self.object_detector.get_reward(observation)
-
-        info = {'distance_from_center': self.object_detector.get_distance_from_img_center(),
-                'box': self.object_detector.get_distance_from_img_center()}
-
-        return observation, reward, False, info
+        return observation, 0, False, {}

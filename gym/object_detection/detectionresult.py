@@ -19,13 +19,13 @@ class DetectionResult:
     def get_box(self):
         return self.box
 
-    def get_bonding_area(self):
+    def get_area(self):
         h = np.abs(self.top - self.bottom)
         w = np.abs(self.left - self.right)
 
         return h * w
 
-    def get_bounding_center(self):
+    def get_center(self):
         x = (self.left + self.right) / 2.0
         y = (self.top + self.bottom) / 2.0
 

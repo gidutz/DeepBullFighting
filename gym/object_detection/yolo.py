@@ -14,7 +14,7 @@ from object_detection.yolo3.utils import letterbox_image
 import os
 from keras.utils import multi_gpu_model
 from object_detection.detectionresult import DetectionResult
-
+from PIL import Image
 
 class YOLO(object):
     _defaults = {
@@ -110,7 +110,8 @@ class YOLO(object):
         return boxes, scores, classes
 
     def detect_image(self, image):
-
+        if isinstance(image, np.ndarray):
+            image = Image.fromarray(image)
         if self.model_image_size != (None, None):
             assert self.model_image_size[0]%32 == 0, 'Multiples of 32 required'
             assert self.model_image_size[1]%32 == 0, 'Multiples of 32 required'
