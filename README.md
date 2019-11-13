@@ -1,3 +1,5 @@
+![](https://ml.globenewswire.com/Resource/Download/67c1a8c2-652d-4dbb-bb47-d5e1b136c62a?size=1)
+
 # Deep Racer Bull Fighting Gym
 This repository implements the [OpenAI Gym](http://github.com/openai/gym "OpenAI Gym") interface to be compatible with[ AWS DeepRacer](https://aws.amazon.com/deepracer/ " AWS DeepRacer")
 
