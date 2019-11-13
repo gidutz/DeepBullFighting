@@ -24,7 +24,7 @@ class DeepRacerEnv(gym.Env):
                                                         object_name='bottle',
                                                         model_data_dir=model_data_dir)
 
-        self.action_space = spaces.Box(np.array([-0.9,-1.0]), np.array([+0.9,+1.0]), dtype=np.float32) # angle, throttle
+        self.action_space = spaces.Box(np.array([-0.9,-0.9]), np.array([+0.9,+0.9]), dtype=np.float32) # angle, throttle
         self.observation_space = spaces.Box(low=0, high=255, shape=self.image_size + (3,), dtype=np.uint8)
         self.latest_detection = DetectionResult.get_empty()
 
