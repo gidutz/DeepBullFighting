@@ -35,4 +35,6 @@ class DetectionResult:
     def get_empty(cls):
         return cls([0, 0, 0, 0], 0, 0)
 
+    def is_empty(self):
+        return (self.box.sum() == 0) & (self.score == 0)
 

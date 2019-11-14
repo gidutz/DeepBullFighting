@@ -4,12 +4,13 @@ from random import sample
 
 import keras.layers as lyr
 from keras.models import Model
-
+import os
 from deep_racer_env import DeepRacerEnv
 from gym_wrappers import ContinuesToDiscreteActionWrapper
 
 
 class DQNAgent:
+    WEIGHTS_PATH = './agents_data/model_weights.h5'
     def __init__(self, env: DeepRacerEnv, gamma, exploraion_rate):
         self.env = env
         self.gamma = gamma
@@ -20,17 +21,22 @@ class DQNAgent:
     def _build_model(self, hiddens=None):
 
         lyr_inp = lyr.Input(self.env.observation_space.shape)
-
         lyr_prev = lyr_inp
 
         if hiddens is not None:
             for hidden_size in hiddens:
-                lyr_prev = lyr.Dense(hidden_size, activation='relu')(lyr_prev)
+                lyr_prev = lyr.Dense(hidden_size, activation='tanh')(lyr_prev)
 
         lyr_out = lyr.Dense(self.env.action_space.n, activation='linear')(lyr_prev)
 
         model = Model(lyr_inp, lyr_out)
         model.compile(loss='mse', optimizer='nadam')
+
+        if os.path.exists(DQNAgent.WEIGHTS_PATH):
+            try:
+                model.load_weights()
+            except:
+                print('Cannot load weights, you might want to delete the file')
 
         return model
 
@@ -51,6 +57,7 @@ class DQNAgent:
         R_next = self.model.predict(X_next)
         R[range(len(R)),a] = r + self.gamma * R_next.max(axis=1)
         self.model.train_on_batch(X, R)
+        self.model.save_weights(DQNAgent.WEIGHTS_PATH, overwrite=True)
 
     def feedback(self, observation, action, reward, next_observation):
         self.memory.append((observation, action, reward, next_observation))

@@ -3,10 +3,12 @@ from deep_racer_env import DeepRacerEnv
 from gym_wrappers import ObservationToDetectionWrapper, DeepRewardWrapper, ContinuesToDiscreteActionWrapper
 from agents import DQNAgent
 from os.path import expanduser
+import warnings
+warnings.filterwarnings("ignore")
 
 if __name__ == '__main__':
-    x_csrf_token = 'IjNlZTM2OWRkY2RhZDVmMTkyMzQxZmU3MzQzNGVkMDc4MWEzMDFhNDUi.Xcw5Lg.UJ1ELWy1XMFETdAPMYYiIQu60u4'
-    cookie = 'session=eyJjc3JmX3Rva2VuIjp7IiBiIjoiTTJWbE16WTVaR1JqWkdGa05XWXhPVEl6TkRGbVpUY3pORE0wWldRd056Z3hZVE13TVdFME5RPT0ifX0.XcwpnQ.7vyPjIn6PF4XbjmPJc5cJ5ZMct4; deepracer_token=7c16afa0-793e-4d90-a843-bfc45dfa6425'
+    x_csrf_token = 'IjJkNjU0NzIwOWZmMDVmZGUzNTExYzQ3MjFmNWFlMzczYmVkYTRhMjEi.Xc0drA.A91XNcCA_JWXnpfAytfXg4kD0wU'
+    cookie = 'session=eyJjc3JmX3Rva2VuIjp7IiBiIjoiTW1RMk5UUTNNakE1Wm1Zd05XWmtaVE0xTVRGak5EY3lNV1kxWVdVek56TmlaV1JoTkdFeU1RPT0ifX0.Xc0dnA.ZZ2GmUyBYBlKC6Pv2_ny1a-yZUw; deepracer_token=fbdf6cd1-b45c-41f8-bda8-eea39b0d846e'
     host = '172.20.1.54'
     model_data_dir = expanduser('~/PycharmProjects/DeepBullFighter/gym/object_detection')
     racer_env = DeepRacerEnv(x_csrf_token=x_csrf_token, cookie=cookie, host=host, model_data_dir=model_data_dir)
@@ -19,9 +21,12 @@ if __name__ == '__main__':
     done = False
     obs = racer_env.reset()
 
-    while not done:
-        action = agent.act(obs)
-        print(obs, action, racer_env.action(action))
-        obs_next, reward, done, _ = racer_env.step(action)
-        agent.feedback(obs, action, reward, obs_next)
-        obs = obs_next
+    for episode in  range (100):
+        print('Playing episode:', episode)
+        while not done:
+            action = agent.act(obs)
+            print(obs, action, racer_env.action(action))
+            obs_next, reward, done, _ = racer_env.step(action)
+            agent.feedback(obs, action, reward, obs_next)
+            obs = obs_next
+
