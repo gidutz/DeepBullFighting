@@ -13,6 +13,9 @@ from object_detection.detectionresult import DetectionResult
 class DeepRacerEnv(gym.Env):
     START = 'start'
     STOP = 'stop'
+    MAX_EMPTY_STEPS = 3
+    MAX_THROTTLE = 0.7
+    MAX_ANGLE = 0.5
 
     def __init__(self, x_csrf_token, cookie, host, image_size=(224, 224), model_data_dir=None):
         self.x_csrf_token = x_csrf_token
@@ -24,9 +27,13 @@ class DeepRacerEnv(gym.Env):
                                                         object_name='bottle',
                                                         model_data_dir=model_data_dir)
 
-        self.action_space = spaces.Box(np.array([-0.9,-0.9]), np.array([+0.9,+0.9]), dtype=np.float32) # angle, throttle
+        self.action_space = spaces.Box(np.array([-1.0* DeepRacerEnv.MAX_ANGLE,-1.0*DeepRacerEnv.MAX_THROTTLE]),
+                                       np.array([+1.0* DeepRacerEnv.MAX_ANGLE,+1.0*DeepRacerEnv.MAX_THROTTLE]),
+                                       dtype=np.float32) # angle, throttle
         self.observation_space = spaces.Box(low=0, high=255, shape=self.image_size + (3,), dtype=np.uint8)
         self.latest_detection = DetectionResult.get_empty()
+        self.game_over = False
+        self.empty_steps = 0
 
     def get_headers(self):
         headers = {
@@ -70,16 +77,26 @@ class DeepRacerEnv(gym.Env):
     def reset(self):
         self.cam = DeepRacerCam(self.host, self.cookie, self.image_size)
         self.cam.start()
-        logging.info("Started Game!")
+        logging.info("Env Reset!")
+        self.empty_steps = 0
+        self.latest_detection = DetectionResult.get_empty()
         return self.cam.get_image()
 
-    def is_game_over(self, detections):
+    def is_game_over(self):
         """
-
         :return:
         """
+        self.game_over = False
+        if (self.latest_detection.is_empty()) & (self.empty_steps > DeepRacerEnv.MAX_EMPTY_STEPS):
+            print("Game Over!")
+            time.sleep(10)
+            self.game_over = True
+        elif (self.latest_detection.is_empty()) & (self.empty_steps <= DeepRacerEnv.MAX_EMPTY_STEPS):
+            self.empty_steps += 1
+        elif not self.latest_detection.is_empty():
+            self.empty_steps = 0
 
-    def step(self, action, step_duration=1):
+    def step(self, action, step_duration=0.3):
         """
         Advances the car for step_duration second
         :param action: iterable of (angle (float), throttle(float))
@@ -93,4 +110,4 @@ class DeepRacerEnv(gym.Env):
         observation = self.cam.get_image()
         self.latest_detection = self.object_detector.get_detection(observation)
 
-        return observation, 0, False, {}
+        return observation, 0, self.is_game_over(), {}
