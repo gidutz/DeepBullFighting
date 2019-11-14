@@ -29,4 +29,5 @@ if __name__ == '__main__':
             obs_next, reward, done, _ = racer_env.step(action)
             agent.feedback(obs, action, reward, obs_next)
             obs = obs_next
+        racer_env.reset()
 

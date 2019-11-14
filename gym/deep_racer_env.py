@@ -77,14 +77,24 @@ class DeepRacerEnv(gym.Env):
     def reset(self):
         self.cam = DeepRacerCam(self.host, self.cookie, self.image_size)
         self.cam.start()
-        logging.info("Started Game!")
+        logging.info("Env Reset!")
+        self.empty_steps = 0
+        self.latest_detection = DetectionResult.get_empty()
         return self.cam.get_image()
 
-    def is_game_over(self, detections):
+    def is_game_over(self):
         """
-
         :return:
         """
+        self.game_over = False
+        if (self.latest_detection.is_empty()) & (self.empty_steps > DeepRacerEnv.MAX_EMPTY_STEPS):
+            print("Game Over!")
+            time.sleep(10)
+            self.game_over = True
+        elif (self.latest_detection.is_empty()) & (self.empty_steps <= DeepRacerEnv.MAX_EMPTY_STEPS):
+            self.empty_steps += 1
+        elif not self.latest_detection.is_empty():
+            self.empty_steps = 0
 
     def step(self, action, step_duration=0.3):
         """
@@ -100,14 +110,4 @@ class DeepRacerEnv(gym.Env):
         observation = self.cam.get_image()
         self.latest_detection = self.object_detector.get_detection(observation)
 
-        self.game_over = False
-        if (self.latest_detection.is_empty()) & (self.empty_steps > DeepRacerEnv.MAX_EMPTY_STEPS):
-            print("Game Over!")
-            time.sleep(10)
-            self.game_over = True
-        elif (self.latest_detection.is_empty()) & (self.empty_steps <= DeepRacerEnv.MAX_EMPTY_STEPS):
-            self.empty_steps += 1
-        elif not self.latest_detection.is_empty():
-            self.empty_steps = 0
-
-        return observation, 0, self.game_over, {}
+        return observation, 0, self.is_game_over(), {}
