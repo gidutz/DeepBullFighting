@@ -96,6 +96,8 @@ class DeepRacerEnv(gym.Env):
         elif not self.latest_detection.is_empty():
             self.empty_steps = 0
 
+        return self.game_over
+
     def step(self, action, step_duration=0.3):
         """
         Advances the car for step_duration second
