@@ -37,6 +37,6 @@ if __name__ == '__main__':
         racer_env.reset()
         done = False
         print("Total Reward: ", np.sum(rewards))
-        with open('./agents_data/{}.txt'.format(game_ts), 'w+') as file:
+        with open('./agents_data/{}.txt'.format(game_ts), 'a') as file:
             file.write(str(rewards))
             file.write("\n")

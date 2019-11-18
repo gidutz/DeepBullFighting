@@ -50,7 +50,7 @@ class DeepRewardWrapper(RewardWrapper):
          :return: The reward
          """
         coverage = self.env.latest_detection.get_area() / (self.env.image_size[0] * self.env.image_size[1])
-        distance_from_center = ((self.env.latest_detection.get_center() - self.env.image_size) ** 2).sum() ** 0.5
-        distance_from_center /= ((self.env.image_size / 2)**2).sum()**0.5
+        distance_from_center = (self.env.latest_detection.get_center() - self.env.image_size / 2) / self.env.image_size.max()
+        distance_from_center = (distance_from_center**2).sum() ** 0.5
 
         return (1.0 - distance_from_center) * coverage
