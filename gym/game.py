@@ -7,8 +7,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 if __name__ == '__main__':
-    x_csrf_token = 'IjJkNjU0NzIwOWZmMDVmZGUzNTExYzQ3MjFmNWFlMzczYmVkYTRhMjEi.Xc0drA.A91XNcCA_JWXnpfAytfXg4kD0wU'
-    cookie = 'session=eyJjc3JmX3Rva2VuIjp7IiBiIjoiTW1RMk5UUTNNakE1Wm1Zd05XWmtaVE0xTVRGak5EY3lNV1kxWVdVek56TmlaV1JoTkdFeU1RPT0ifX0.Xc0dnA.ZZ2GmUyBYBlKC6Pv2_ny1a-yZUw; deepracer_token=fbdf6cd1-b45c-41f8-bda8-eea39b0d846e'
+    x_csrf_token = 'IjJkNjU0NzIwOWZmMDVmZGUzNTExYzQ3MjFmNWFlMzczYmVkYTRhMjEi.Xc1IOg.RUyaPAms-Ka6WTBIEJiv6xNA4-4'
+    cookie = 'session=eyJjc3JmX3Rva2VuIjp7IiBiIjoiTW1RMk5UUTNNakE1Wm1Zd05XWmtaVE0xTVRGak5EY3lNV1kxWVdVek56TmlaV1JoTkdFeU1RPT0ifX0.Xc0dnA.ZZ2GmUyBYBlKC6Pv2_ny1a-yZUw; deepracer_token=0e256035-578b-4245-ab71-59c0d9e986b1'
     host = '172.20.1.54'
     model_data_dir = expanduser('~/PycharmProjects/DeepBullFighter/gym/object_detection')
     racer_env = DeepRacerEnv(x_csrf_token=x_csrf_token, cookie=cookie, host=host, model_data_dir=model_data_dir)
